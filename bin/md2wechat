@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+// Suppress experimental ESM warning by launching Node with environment variable
+const { spawnSync } = require('child_process')
+const path = require('path')
+
+const result = spawnSync(
+  process.execPath,
+  [
+    ...process.execArgv,
+    path.join(__dirname, '../dist/index.js'),
+    ...process.argv.slice(2)
+  ],
+  {
+    env: {
+      ...process.env,
+      NODE_NO_WARNINGS: '1'
+    },
+    stdio: 'inherit'
+  }
+)
+
+process.exitCode = result.status
+

@@ -4,13 +4,16 @@
   "description": "Markdown to WeChat HTML converter",
   "main": "dist/index.js",
   "bin": {
-    "md2wechat": "./dist/index.js"
+    "md2wechat": "./bin/md2wechat"
   },
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/index.ts",
     "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "markdown",
