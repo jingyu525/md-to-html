@@ -23,6 +23,7 @@ export const theme: Theme = {
   link: 'color:#007bff;text-decoration:none;',
   blockquote: 'margin:12px 0;padding:8px 12px;background:#f6f8fa;border-left:4px solid #007bff;color:#555;',
   thematicBreak: 'height:1px;background:#e1e4e8;margin:20px 0;',
-  delete: 'text-decoration:line-through;color:#999;'
+  delete: 'text-decoration:line-through;color:#999;',
+  mermaid: 'max-width:100%;height:auto;margin:12px 0;display:block;'
 }
 

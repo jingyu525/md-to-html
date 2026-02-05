@@ -232,6 +232,13 @@ export type PlatformNode =
   | PlatformBlockquoteNode
   | PlatformThematicBreakNode
   | PlatformDeleteNode
+  | PlatformMermaidNode
+
+export interface PlatformMermaidNode {
+  type: 'mermaid'
+  value: string
+  svgData?: string
+}
 
 // 主题类型定义
 export interface Theme {
@@ -256,4 +263,5 @@ export interface Theme {
   blockquote: string
   thematicBreak: string
   delete: string
+  mermaid: string
 }

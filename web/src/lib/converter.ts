@@ -15,14 +15,14 @@ export interface ConverterResult {
   error?: string
 }
 
-export function convertMarkdownToHTML(markdown: string, options: ConverterOptions = {}): ConverterResult {
+export async function convertMarkdownToHTML(markdown: string, options: ConverterOptions = {}): Promise<ConverterResult> {
   try {
     const themeName = options.theme || 'wechat-default'
     const theme = themeName === 'wechat-clean' ? wechatCleanTheme : wechatDefaultTheme
 
     const mdast = parseMarkdown(markdown)
     const wechatAst = wechatAdapter(mdast)
-    const html = renderHTML(wechatAst, theme)
+    const html = await renderHTML(wechatAst, theme)
 
     return { html }
   } catch (error) {

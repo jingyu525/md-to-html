@@ -5,7 +5,7 @@ import { parseMarkdown } from './parser/markdown'
 import { wechatAdapter } from './adapter/wechat'
 import { renderHTML } from './renderer/html'
 
-function main() {
+async function main() {
   const args = minimist(process.argv.slice(2), {
     alias: {
       output: 'o',
@@ -36,7 +36,7 @@ function main() {
 
     // 动态导入主题
     const { theme } = require(`./theme/${themeName}.js`)
-    const html = renderHTML(wechatAst, theme as any)
+    const html = await renderHTML(wechatAst, theme as any)
 
     if (outputFile) {
       fs.writeFileSync(outputFile, html, 'utf-8')

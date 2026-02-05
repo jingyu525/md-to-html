@@ -1,24 +1,24 @@
-import type { MdNode, MdRootNode, PlatformNode } from '../types'
+import type { MdNode, MdRootNode, PlatformNode, PlatformRootNode } from '../types'
 
-export function wechatAdapter(mdast: MdNode) {
-  function transform(node: MdNode): PlatformNode | null {
+export function wechatAdapter(mdast: any): PlatformRootNode {
+  function transform(node: any): PlatformNode | null {
     switch (node.type) {
       case 'heading':
         return {
           type: 'div',
           tag: 'div',
           level: node.depth,
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'paragraph':
         // 检查是否为包含多个 emoji 行的段落，需要转换为列表
         const textValue = node.children
-          ?.filter(c => c.type === 'text')
-          .map(c => (c as any).value)
+          ?.filter((c: any) => c.type === 'text')
+          .map((c: any) => c.value)
           .join('') || ''
 
-        const textLines = textValue.split('\n').filter(l => l.trim())
+        const textLines = textValue.split('\n').filter((l: string) => l.trim())
         const emojiLines = textLines.filter((line: string) => {
           const trimmed = line.trim()
           return trimmed && /^[\u{1F300}-\u{1F9FF}]/u.test(trimmed)
@@ -43,7 +43,7 @@ export function wechatAdapter(mdast: MdNode) {
 
         return {
           type: 'p',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'text':
@@ -59,6 +59,12 @@ export function wechatAdapter(mdast: MdNode) {
         }
 
       case 'code':
+        if (node.lang === 'mermaid') {
+          return {
+            type: 'mermaid',
+            value: node.value
+          }
+        }
         return {
           type: 'codeblock',
           value: node.value,
@@ -68,13 +74,13 @@ export function wechatAdapter(mdast: MdNode) {
       case 'list':
         return {
           type: node.ordered ? 'ol' : 'ul',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'listItem':
         return {
           type: 'li',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'image':
@@ -88,13 +94,13 @@ export function wechatAdapter(mdast: MdNode) {
       case 'strong':
         return {
           type: node.type,
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'table':
         return {
           type: 'table',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) as any : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) as any : []
         }
 
       case 'tableRow':
@@ -102,13 +108,13 @@ export function wechatAdapter(mdast: MdNode) {
         return {
           type: 'tableRow',
           isHeader,
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) as any : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) as any : []
         }
 
       case 'tableCell':
         return {
           type: 'tableCell',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'link':
@@ -116,13 +122,13 @@ export function wechatAdapter(mdast: MdNode) {
           type: 'link',
           url: node.url,
           title: node.title,
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'blockquote':
         return {
           type: 'blockquote',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       case 'thematicBreak':
@@ -133,7 +139,7 @@ export function wechatAdapter(mdast: MdNode) {
       case 'delete':
         return {
           type: 'delete',
-          children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
+          children: node.children ? node.children.map(transform).filter((n: any): n is PlatformNode => n !== null) : []
         }
 
       default:

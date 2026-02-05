@@ -19,11 +19,19 @@ export default function ToolbarComponent(props: ToolbarProps) {
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
 
-  const handleAction = (action: () => void, message: string) => {
-    action()
-    setToastMessage(message)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
+  const handleAction = async (action: () => void | Promise<void>, message: string) => {
+    try {
+      await action()
+      setToastMessage(message)
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 3000)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '操作失败，请重试'
+      setToastMessage(errorMessage)
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 3000)
+      console.error('操作失败:', error)
+    }
   }
 
   return (

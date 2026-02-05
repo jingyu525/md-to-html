@@ -24,5 +24,6 @@ export const theme: Theme = {
   link: 'color:#0066cc;text-decoration:none;border-bottom:1px solid transparent;',
   blockquote: 'margin:10px 0;padding:10px 14px;background:#fafafa;border-left:3px solid #999;color:#666;',
   thematicBreak: 'height:1px;background:#e0e0e0;margin:24px 0;',
-  delete: 'text-decoration:line-through;color:#888;'
+  delete: 'text-decoration:line-through;color:#888;',
+  mermaid: 'max-width:100%;height:auto;margin:15px 0;display:block;'
 }

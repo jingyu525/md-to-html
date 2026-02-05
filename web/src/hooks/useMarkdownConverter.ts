@@ -21,6 +21,29 @@ function greet(name) {
 console.log(greet('WeChat'))
 \`\`\`
 
+## Mermaid 图表
+
+现在支持 Mermaid 图表渲染！以下是一些示例：
+
+### 流程图
+
+\`\`\`mermaid
+graph TD
+  A[开始] --> B{判断条件}
+  B -->|是| C[执行操作]
+  B -->|否| D[跳过]
+  C --> E[结束]
+  D --> E
+\`\`\`
+
+### 序列图
+
+\`\`\`mermaid
+sequenceDiagram
+  Alice->>Bob: Hello Bob, how are you?
+  Bob-->>Alice: I am good thanks!
+\`\`\`
+
 ## 列表
 
 ### 无序列表
@@ -49,7 +72,7 @@ console.log(greet('WeChat'))
 `
 
 export function useMarkdownConverter() {
-  const [markdown, setMarkdown] = useState('')
+  const [markdown, setMarkdown] = useState(EXAMPLE_MARKDOWN)
   const [html, setHtml] = useState('')
   const [currentTheme, setCurrentTheme] = useState<'wechat-default' | 'wechat-clean'>('wechat-default')
   const [conversionTime, setConversionTime] = useState<number>()
@@ -58,7 +81,7 @@ export function useMarkdownConverter() {
   const themes = getAvailableThemes()
 
   // 防抖转换函数
-  const convert = useCallback((md: string, theme: 'wechat-default' | 'wechat-clean') => {
+  const convert = useCallback(async (md: string, theme: 'wechat-default' | 'wechat-clean') => {
     if (!md.trim()) {
       setHtml('')
       setConversionTime(undefined)
@@ -68,7 +91,7 @@ export function useMarkdownConverter() {
     setIsConverting(true)
     const startTime = performance.now()
 
-    const result = convertMarkdownToHTML(md, { theme })
+    const result = await convertMarkdownToHTML(md, { theme })
 
     const endTime = performance.now()
     setConversionTime(Math.round(endTime - startTime))
@@ -129,14 +152,67 @@ export function useMarkdownConverter() {
   const handleCopyRichHTML = useCallback(async () => {
     if (!html) return
 
+    // 方法 1: 尝试使用 ClipboardItem API (最可靠的方法)
     try {
-      const blob = new Blob([html], { type: 'text/html' })
-      const item = new ClipboardItem({ 'text/html': blob })
-      await navigator.clipboard.write([item])
-      console.log('HTML (rich text) 已复制到剪贴板')
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
+        // 同时提供 text/html 和 text/plain 以提高兼容性
+        const htmlBlob = new Blob([html], { type: 'text/html' })
+        const textBlob = new Blob([html.replace(/<[^>]*>/g, '')], { type: 'text/plain' })
+
+        const item = new ClipboardItem({
+          'text/html': htmlBlob,
+          'text/plain': textBlob
+        })
+
+        await navigator.clipboard.write([item])
+        console.log('HTML (富文本) 已复制到剪贴板 (使用 Clipboard API)')
+        return
+      }
     } catch (error) {
-      console.error('富文本复制失败:', error)
-      throw error
+      console.error('Clipboard API 失败:', error)
+    }
+
+    // 方法 2: 使用 document.execCommand 作为 fallback
+    try {
+      // 创建一个临时的 div 元素来容纳 HTML
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = html
+      tempDiv.style.position = 'absolute'
+      tempDiv.style.left = '-9999px'
+      tempDiv.style.whiteSpace = 'pre-wrap'
+      document.body.appendChild(tempDiv)
+
+      // 创建选区
+      const range = document.createRange()
+      range.selectNodeContents(tempDiv)
+      const selection = window.getSelection()
+      selection?.removeAllRanges()
+      selection?.addRange(range)
+
+      // 执行复制
+      const success = document.execCommand('copy')
+
+      // 清理
+      selection?.removeAllRanges()
+      document.body.removeChild(tempDiv)
+
+      if (success) {
+        console.log('HTML (富文本) 已复制到剪贴板 (使用 execCommand)')
+        return
+      } else {
+        throw new Error('复制命令执行失败')
+      }
+    } catch (error) {
+      console.error('execCommand 失败:', error)
+    }
+
+    // 方法 3: 最后的降级方案：复制纯文本
+    try {
+      await navigator.clipboard.writeText(html)
+      console.log('已降级为纯文本复制')
+    } catch (finalError) {
+      console.error('所有复制方法都失败:', finalError)
+      throw new Error('复制失败，请手动复制')
     }
   }, [html])
 

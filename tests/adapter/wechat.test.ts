@@ -56,6 +56,29 @@ describe('Adapter', () => {
       }
     })
 
+    it('should transform mermaid code block to mermaid node', () => {
+      const mdast = createMdast('code', {
+        value: 'graph TD\n  A-->B',
+        lang: 'mermaid'
+      })
+      const result = wechatAdapter(mdast)
+      expect(result.children[0].type).toBe('mermaid')
+      if (result.children[0].type === 'mermaid') {
+        expect(result.children[0].value).toBe('graph TD\n  A-->B')
+      }
+    })
+
+    it('should transform code block without language to codeblock', () => {
+      const mdast = createMdast('code', {
+        value: 'const x = 1;'
+      })
+      const result = wechatAdapter(mdast)
+      expect(result.children[0].type).toBe('codeblock')
+      if (result.children[0].type === 'codeblock') {
+        expect(result.children[0].lang).toBe('')
+      }
+    })
+
     it('should transform unordered list to ul', () => {
       const mdast = createMdast('list', {
         ordered: false,

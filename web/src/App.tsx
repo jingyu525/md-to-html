@@ -42,6 +42,7 @@ function App() {
         onLoadExample={handleLoadExample}
         onCopyHTML={handleCopyHTML}
         onCopyRichHTML={handleCopyRichHTML}
+        onExportHTML={handleExportHTML}
         onOpenInNewWindow={handleOpenInNewWindow}
         markdownLength={markdown.length}
         conversionTime={conversionTime}

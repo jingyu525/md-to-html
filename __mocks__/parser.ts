@@ -1,5 +1,55 @@
 // Mock for parser module
 export function parseMarkdown(markdown: string): any {
+  // Check for mermaid code blocks (support multiple)
+  const mermaidRegex = /```mermaid\n([\s\S]*?)```/g
+  const matches = [...markdown.matchAll(mermaidRegex)]
+
+  if (matches.length > 0) {
+    const children = []
+    let lastIndex = 0
+
+    matches.forEach((match) => {
+      const beforeContent = markdown.slice(lastIndex, match.index).trim()
+      const mermaidCode = match[1].trim()
+
+      // Parse content before mermaid using the original logic
+      if (beforeContent) {
+        const parsed = parseContentWithoutMermaid(beforeContent)
+        if (parsed.children) {
+          children.push(...parsed.children)
+        }
+      }
+
+      // Add mermaid code
+      children.push({
+        type: 'code',
+        value: mermaidCode,
+        lang: 'mermaid'
+      })
+
+      lastIndex = match.index! + match[0].length
+    })
+
+    // Parse content after last mermaid
+    const afterContent = markdown.slice(lastIndex).trim()
+    if (afterContent) {
+      const parsed = parseContentWithoutMermaid(afterContent)
+      if (parsed.children) {
+        children.push(...parsed.children)
+      }
+    }
+
+    return {
+      type: 'root',
+      children
+    }
+  }
+
+  // If no mermaid, parse normally
+  return parseContentWithoutMermaid(markdown)
+}
+
+function parseContentWithoutMermaid(markdown: string): any {
   // Check for inline code in paragraph
   const inlineCodeMatch = markdown.match(/`([^`]+)`/)
   if (inlineCodeMatch && !markdown.includes('```')) {
@@ -61,8 +111,8 @@ export function parseMarkdown(markdown: string): any {
     }
   }
 
-  // Check for code block
-  if (markdown.includes('```')) {
+  // Check for code block (non-mermaid)
+  if (markdown.includes('```') && !markdown.includes('```mermaid')) {
     const langMatch = markdown.match(/```(\w+)/)
     return {
       type: 'root',
@@ -78,18 +128,43 @@ export function parseMarkdown(markdown: string): any {
 
   // Check for unordered list
   if (markdown.startsWith('- ') || markdown.startsWith('* ')) {
+    // Check if the last item contains inline formatting like **text**
+    const lines = markdown.split('\n').filter(line => line.trim())
+    const listItems = []
+    const extraContent = []
+
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        listItems.push({
+          type: 'listItem',
+          children: [{ type: 'text', value: trimmed.replace(/^[-*]\s+/, '') }]
+        })
+      } else {
+        extraContent.push(trimmed)
+      }
+    }
+
+    const children = []
+    if (listItems.length > 0) {
+      children.push({
+        type: 'list',
+        ordered: false,
+        children: listItems
+      })
+    }
+
+    // Parse extra content separately
+    if (extraContent.length > 0) {
+      const extraParsed = parseContentWithoutMermaid(extraContent.join('\n'))
+      if (extraParsed.children) {
+        children.push(...extraParsed.children)
+      }
+    }
+
     return {
       type: 'root',
-      children: [
-        {
-          type: 'list',
-          ordered: false,
-          children: markdown.split('\n').filter(line => line.trim()).map(line => ({
-            type: 'listItem',
-            children: [{ type: 'text', value: line.replace(/^[-*]\s+/, '') }]
-          }))
-        }
-      ]
+      children
     }
   }
 
