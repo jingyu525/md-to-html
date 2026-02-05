@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FileText, Copy, Download, RefreshCw } from 'lucide-react'
+import { FileText, Copy, Download, RefreshCw, ExternalLink, Code2 } from 'lucide-react'
 import ThemeSelector from './ThemeSelector'
 
 interface ToolbarProps {
@@ -8,7 +8,9 @@ interface ToolbarProps {
   onThemeChange: (themeId: string) => void
   onLoadExample: () => void
   onCopyHTML: () => void
+  onCopyRichHTML: () => void
   onExportHTML: () => void
+  onOpenInNewWindow: () => void
   markdownLength: number
   conversionTime?: number
 }
@@ -49,11 +51,27 @@ export default function ToolbarComponent(props: ToolbarProps) {
           </button>
 
           <button
-            onClick={() => handleAction(props.onCopyHTML, 'HTML 已复制到剪贴板')}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            onClick={() => handleAction(props.onCopyRichHTML, 'HTML (富文本) 已复制到剪贴板')}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-md hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           >
             <Copy className="w-4 h-4" />
             复制 HTML
+          </button>
+
+          <button
+            onClick={() => handleAction(props.onCopyHTML, 'HTML (纯文本) 已复制到剪贴板')}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          >
+            <Code2 className="w-4 h-4" />
+            纯文本
+          </button>
+
+          <button
+            onClick={() => handleAction(props.onOpenInNewWindow, '新窗口已打开')}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          >
+            <ExternalLink className="w-4 h-4" />
+            新窗口
           </button>
 
           <button

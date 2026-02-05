@@ -64,7 +64,7 @@ export default function PreviewComponent(props: PreviewProps) {
         <span className="text-sm font-medium text-gray-700">预览</span>
         <span className="text-xs text-gray-500">微信公众号样式</span>
       </div>
-      <div className="flex-1 relative">
+      <div className="flex-1 overflow-auto">
         <iframe
           ref={iframeRef}
           title="Preview"

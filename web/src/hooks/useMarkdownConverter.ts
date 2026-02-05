@@ -126,6 +126,45 @@ export function useMarkdownConverter() {
     URL.revokeObjectURL(url)
   }, [html])
 
+  const handleCopyRichHTML = useCallback(async () => {
+    if (!html) return
+
+    try {
+      const blob = new Blob([html], { type: 'text/html' })
+      const item = new ClipboardItem({ 'text/html': blob })
+      await navigator.clipboard.write([item])
+      console.log('HTML (rich text) 已复制到剪贴板')
+    } catch (error) {
+      console.error('富文本复制失败:', error)
+      throw error
+    }
+  }, [html])
+
+  const handleOpenInNewWindow = useCallback(() => {
+    if (!html) return
+
+    const newWindow = window.open('', '_blank')
+    if (!newWindow) {
+      console.error('无法打开新窗口')
+      return
+    }
+
+    newWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="zh-CN">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>预览</title>
+      </head>
+      <body style="padding: 40px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        ${html}
+      </body>
+      </html>
+    `)
+    newWindow.document.close()
+  }, [html])
+
   return {
     markdown,
     html,
@@ -137,6 +176,8 @@ export function useMarkdownConverter() {
     handleThemeChange,
     handleLoadExample,
     handleCopyHTML,
-    handleExportHTML
+    handleExportHTML,
+    handleCopyRichHTML,
+    handleOpenInNewWindow
   }
 }
