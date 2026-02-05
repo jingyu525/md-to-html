@@ -1,13 +1,14 @@
 # md2wechat
 
-一个将 Markdown 转换为微信公众号兼容的 HTML 的命令行工具。
+一个将 Markdown 转换为微信公众号兼容的 HTML 的工具，提供 CLI 和 Web 两种使用方式。
 
 ## 特性
 
 - ✅ 完整的 Markdown 语法支持
 - ✅ 专为微信公众号优化的内联样式
 - ✅ 自定义主题支持
-- ✅ 输出到文件或控制台
+- ✅ CLI 工具
+- ✅ Web 在线编辑器（实时预览）
 - ✅ 完整的类型定义
 - ✅ 单元测试覆盖
 
@@ -138,10 +139,36 @@ md-to-html/
 │   ├── renderer/      # HTML 渲染器
 │   ├── theme/         # 主题定义
 │   └── types/         # TypeScript 类型定义
+├── web/              # Web 前端应用
+│   ├── src/
+│   │   ├── components/  # React 组件
+│   │   ├── hooks/       # 自定义 Hooks
+│   │   └── lib/         # 工具函数
+│   └── package.json
 ├── tests/             # 单元测试
 ├── bin/              # CLI 入口
 └── dist/             # 编译输出
 ```
+
+## Web 界面使用
+
+### 启动开发服务器
+
+```bash
+npm run dev:web
+```
+
+访问 `http://localhost:5173` 即可使用 Web 界面。
+
+### Web 界面功能
+
+- **Markdown 编辑器**：支持语法高亮、自动补全的在线编辑器
+- **实时预览**：左侧编辑 Markdown，右侧实时显示微信公众号样式的 HTML 预览
+- **主题切换**：支持 wechat-default 和 wechat-clean 两套主题的动态切换
+- **一键复制**：将生成的 HTML 一键复制到剪贴板
+- **导出功能**：支持导出 HTML 文件到本地
+- **示例加载**：内置示例 Markdown，方便快速体验
+- **响应式布局**：适配不同屏幕尺寸
 
 ## 技术栈
 

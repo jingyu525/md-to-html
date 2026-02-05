@@ -13,7 +13,10 @@
     "lint:fix": "eslint src --ext .ts --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "dev:web": "cd web && npm run dev",
+    "build:web": "cd web && npm run build",
+    "preview:web": "cd web && npm run preview"
   },
   "keywords": [
     "markdown",
@@ -24,10 +27,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "unified": "^11.0.4",
-    "remark-parse": "^11.0.0"
+    "@monaco-editor/react": "^4.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.563.0",
+    "remark-parse": "^11.0.0",
+    "tailwind-merge": "^3.4.0",
+    "unified": "^11.0.4"
   },
   "devDependencies": {
+    "@types/minimist": "^1.2.5",
     "@types/node": "^20.10.6",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
