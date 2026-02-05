@@ -12,6 +12,35 @@ export function wechatAdapter(mdast: MdNode) {
         }
 
       case 'paragraph':
+        // 检查是否为包含多个 emoji 行的段落，需要转换为列表
+        const textValue = node.children
+          ?.filter(c => c.type === 'text')
+          .map(c => (c as any).value)
+          .join('') || ''
+
+        const textLines = textValue.split('\n').filter(l => l.trim())
+        const emojiLines = textLines.filter((line: string) => {
+          const trimmed = line.trim()
+          return trimmed && /^[\u{1F300}-\u{1F9FF}]/u.test(trimmed)
+        })
+
+        if (emojiLines.length >= 2) {
+          // 转换为列表
+          return {
+            type: 'ul',
+            children: textLines.map((line: string) => ({
+              type: 'li',
+              children: [{
+                type: 'p',
+                children: [{
+                  type: 'text',
+                  value: line.trim()
+                }]
+              }]
+            }))
+          }
+        }
+
         return {
           type: 'p',
           children: node.children ? node.children.map(transform).filter((n): n is PlatformNode => n !== null) : []
